@@ -1,3 +1,4 @@
+#Referencia: https://www.edureka.co/blog/snake-game-with-pygame/
 import time
 import pygame
 import random
@@ -8,6 +9,7 @@ width = 70
 height = 70
 posx = random.randint(0,width-1)
 posy = random.randint(0,height-1)
+
 screen = pygame.display.set_mode((width*10, height*10))
 screen2  = pygame.Surface((width, height))
 
@@ -17,9 +19,32 @@ myfont2 = pygame.font.SysFont('Comic Sans MS', 9)
 pygame.display.set_caption('SNAKE GAME')
 pygame.display.set_icon(pygame.image.load('snake.jpg'))
 
-pygame.draw.rect(screen2, (254,253,225), (posx, posy, 1, 1))
+
 game = True
+snake_list = []
+
+
+def draw_food(posx,posy):
+  food_x = random.randint(0,width-1)
+  food_y = random.randint(0,height-1)
+
+  if food_x  == posx:
+    food_x += 1
+  if food_y == posy:
+    food_y += 1
+
+  return food_x, food_y
+
+def draw_snake(snake_list):
+  for pos in snake_list:
+    pygame.draw.rect(screen2, (254,253,22), (pos[0], pos[1], 1, 1))
+
+food_x, food_y = draw_food(posx,posy)
+snake_len =1
+x_delta = 0
+y_delta = 0
 while game:
+  screen.fill((0,0,0))
   screen.blit(pygame.transform.scale(screen2, screen.get_rect().size), (0, 0))
   for event in pygame.event.get():
       if event.type == pygame.QUIT:
@@ -27,14 +52,19 @@ while game:
         exit()
       if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_UP:
-             posy -=1
+             x_delta = 0
+             y_delta =-1
         if event.key == pygame.K_DOWN:
-                posy +=1
+                y_delta =1
+                x_delta =0
         if event.key == pygame.K_LEFT:
-                posx -=1
+                x_delta =-1
+                y_delta =0
         if event.key == pygame.K_RIGHT:
-                posx +=1
-
+                x_delta =1
+                y_delta =0
+  posx += x_delta
+  posy += y_delta
   screen2.fill((0,0,0))
   if(posx==width):
       game = False
@@ -44,9 +74,27 @@ while game:
        game = False
   if(posy==-1):
         game = False
-  pygame.draw.rect(screen2, (254,253,225), (posx, posy, 1, 1))
-  pygame.time.Clock().tick(30)
+  pygame.draw.rect(screen2, (24,53,225), (food_x, food_y, 1, 1))
+
+
+  snake_Head = []
+  snake_Head.append(posx)
+  snake_Head.append(posy)
+  snake_list.append(snake_Head)
+  if len(snake_list) > snake_len:
+            del snake_list[0]
+  for x in snake_list[:-1]:
+        if x == snake_Head:
+            game = True
+
+  draw_snake(snake_list)
+
+  if posx == food_x and posy == food_y:
+            food_x,food_y = draw_food(posx,posy)
+            snake_len+=1
   pygame.display.update()
+  pygame.time.Clock().tick(10)
+
 
 screen.blit(pygame.transform.scale(screen2, screen.get_rect().size), (0, 0))
 screen.fill((0,255,0))
