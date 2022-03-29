@@ -66,6 +66,8 @@ while game:
   posx += x_delta
   posy += y_delta
   screen2.fill((0,0,0))
+
+  #Si toca bordes
   if(posx==width):
       game = False
   if(posy==height):
@@ -81,21 +83,25 @@ while game:
   snake_Head.append(posx)
   snake_Head.append(posy)
   snake_list.append(snake_Head)
+  #Mantener las referencias de cada posicion de la snake actualizada
   if len(snake_list) > snake_len:
             del snake_list[0]
+
+  #Si la snake toca a si misma
   for x in snake_list[:-1]:
         if x == snake_Head:
             game = True
-
+  #Se dibuja en cada ciclo
   draw_snake(snake_list)
 
+  #Si la snake come alimento
   if posx == food_x and posy == food_y:
             food_x,food_y = draw_food(posx,posy)
             snake_len+=1
   pygame.display.update()
   pygame.time.Clock().tick(10)
 
-
+#Si pierde
 screen.blit(pygame.transform.scale(screen2, screen.get_rect().size), (0, 0))
 screen.fill((0,255,0))
 screen.blit(pygame.font.SysFont(None, 50).render('YOU LOST', True, (255,0,0)), [(width*7)//2, (height*9)//2])
