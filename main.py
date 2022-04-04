@@ -23,6 +23,13 @@ pygame.display.set_icon(pygame.image.load('snake.jpg'))
 game = True
 snake_list = []
 
+font_style = pygame.font.SysFont("bahnschrift", 25)
+score_font = pygame.font.SysFont("comicsansms", 35)
+white = (255, 255, 255)
+
+def Your_score(score):
+    value = score_font.render("Puntuacion: " + str(score), True, white)
+    screen.blit(value, [0, 0])
 
 def draw_food(posx, posy):
     food_x = random.randint(0, width-1)
@@ -49,6 +56,7 @@ while game:
     screen.fill((0, 0, 0))
     screen.blit(pygame.transform.scale(
         screen2, screen.get_rect().size), (0, 0))
+    Your_score(snake_len - 1)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -102,6 +110,7 @@ while game:
     if posx == food_x and posy == food_y:
         food_x, food_y = draw_food(posx, posy)
         snake_len += 1
+        Your_score(snake_len - 1)
     pygame.display.update()
     pygame.time.Clock().tick(10)
 
