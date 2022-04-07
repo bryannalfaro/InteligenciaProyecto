@@ -66,9 +66,9 @@ class button():
         #Call this method to draw the button on the screen
         if outline:
             pygame.draw.rect(win, outline, (self.x-2,self.y-2,self.width+4,self.height+4),0)
-            
+
         pygame.draw.rect(win, self.color, (self.x,self.y,self.width,self.height),0)
-        
+
         if self.text != '':
             font = pygame.font.SysFont('comicsans', 60)
             text = font.render(self.text, 1, (0,0,0))
@@ -79,7 +79,7 @@ class button():
         if pos[0] > self.x and pos[0] < self.x + self.width:
             if pos[1] > self.y and pos[1] < self.y + self.height:
                 return True
-            
+
         return False
 quitButton = button((0, 255, 230), 100, 400, 250, 100, 'Quit')
 continueButton = button((0, 255, 230), 400, 400, 250, 100, 'Play')
@@ -132,7 +132,7 @@ while play:
         # Si la snake toca a si misma
         for x in snake_list[:-1]:
             if x == snake_Head:
-                game = True
+                game = False
 
         # Se revisa que el tamaño de la serpiente mas la nueva fruta no sea mayor al tamaño de la pantalla
         if snake_len + 1 >= (width*height):
