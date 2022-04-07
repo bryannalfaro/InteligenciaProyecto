@@ -84,9 +84,13 @@ class button():
 quitButton = button((0, 255, 230), 100, 400, 250, 100, 'Quit')
 continueButton = button((0, 255, 230), 400, 400, 250, 100, 'Play')
 play = True
-
+sonido_fondo = pygame.mixer.Sound("sound.mp3")
+pygame.mixer.Sound.play(sonido_fondo, -1)
+bandera_sound=True
 while play:
+
     while game:
+
         screen.fill((0, 0, 0))
         screen.blit(pygame.transform.scale(
             screen2, screen.get_rect().size), (0, 0))
@@ -156,17 +160,21 @@ while play:
 
     continueButton.draw(screen, (0,0,0))
     quitButton.draw(screen, (0,0,0))
+    pygame.mixer.pause()
     pygame.display.update()
     for event in pygame.event.get():
         pos = pygame.mouse.get_pos()
         if event.type == pygame.MOUSEBUTTONDOWN:
             if quitButton.isOver(pos):
                 play = False
+                pygame.mixer.pause()
             if continueButton.isOver(pos):
                 posx = random.randint(0, width-1)
                 posy = random.randint(0, height-1)
                 snake_len = 1
                 snake_list = []
                 game = True
+                pygame.mixer.pause()
+                pygame.mixer.Sound.play(sonido_fondo, -1)
 
 pygame.quit()
