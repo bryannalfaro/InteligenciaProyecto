@@ -1,4 +1,10 @@
 # Referencia: https://www.edureka.co/blog/snake-game-with-pygame/
+# Raul Jimenez
+# Bryann Alfaro
+# Donaldo Garcia
+# Oscar Saravia
+# Proyecto de IA
+
 import time
 import pygame
 import random
@@ -27,9 +33,11 @@ font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
 white = (255, 255, 255)
 
+
 def Your_score(score):
     value = score_font.render("Puntuacion: " + str(score), True, white)
     screen.blit(value, [0, 0])
+
 
 def draw_food(posx, posy):
     food_x = random.randint(0, width-1)
@@ -53,8 +61,9 @@ snake_len = 1
 x_delta = 0
 y_delta = 0
 
+
 class button():
-    def __init__(self, color, x,y,width,height, text=''):
+    def __init__(self, color, x, y, width, height, text=''):
         self.color = color
         self.x = x
         self.y = y
@@ -62,31 +71,36 @@ class button():
         self.height = height
         self.text = text
 
-    def draw(self,win,outline=None):
-        #Call this method to draw the button on the screen
+    def draw(self, win, outline=None):
+        # Call this method to draw the button on the screen
         if outline:
-            pygame.draw.rect(win, outline, (self.x-2,self.y-2,self.width+4,self.height+4),0)
+            pygame.draw.rect(win, outline, (self.x-2, self.y -
+                             2, self.width+4, self.height+4), 0)
 
-        pygame.draw.rect(win, self.color, (self.x,self.y,self.width,self.height),0)
+        pygame.draw.rect(win, self.color, (self.x, self.y,
+                         self.width, self.height), 0)
 
         if self.text != '':
             font = pygame.font.SysFont('comicsans', 60)
-            text = font.render(self.text, 1, (0,0,0))
-            win.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
+            text = font.render(self.text, 1, (0, 0, 0))
+            win.blit(text, (self.x + (self.width/2 - text.get_width()/2),
+                     self.y + (self.height/2 - text.get_height()/2)))
 
     def isOver(self, pos):
-        #Pos is the mouse position or a tuple of (x,y) coordinates
+        # Pos is the mouse position or a tuple of (x,y) coordinates
         if pos[0] > self.x and pos[0] < self.x + self.width:
             if pos[1] > self.y and pos[1] < self.y + self.height:
                 return True
 
         return False
+
+
 quitButton = button((0, 255, 230), 100, 400, 250, 100, 'Quit')
 continueButton = button((0, 255, 230), 400, 400, 250, 100, 'Play')
 play = True
 sonido_fondo = pygame.mixer.Sound("sound.mp3")
 pygame.mixer.Sound.play(sonido_fondo, -1)
-bandera_sound=True
+bandera_sound = True
 while play:
 
     while game:
@@ -153,13 +167,14 @@ while play:
         pygame.time.Clock().tick(10)
 
     # Si pierde
-    screen.blit(pygame.transform.scale(screen2, screen.get_rect().size), (0, 0))
+    screen.blit(pygame.transform.scale(
+        screen2, screen.get_rect().size), (0, 0))
     screen.fill((0, 255, 0))
     screen.blit(pygame.font.SysFont(None, 50).render(
         'YOU LOST', True, (255, 0, 0)), [(width*7)//2, (height*9)//2])
 
-    continueButton.draw(screen, (0,0,0))
-    quitButton.draw(screen, (0,0,0))
+    continueButton.draw(screen, (0, 0, 0))
+    quitButton.draw(screen, (0, 0, 0))
     pygame.mixer.pause()
     pygame.display.update()
     for event in pygame.event.get():
