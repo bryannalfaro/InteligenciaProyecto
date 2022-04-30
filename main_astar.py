@@ -100,6 +100,7 @@ cont = 0
 path = astar(pygame.surfarray.pixels2d(screen2),(posx,posy),(food_x, food_y))
 pxcont = 0
 pycont=1
+cont1 = 0
 print(path)
 while play:
 
@@ -113,11 +114,12 @@ while play:
 
         posx = path[pxcont][0]
         posy  = path[pxcont][1]
-        #print("avanzando")
+        #print("poss",cont1)
         pxcont += 1
         cont += 1
         screen2.fill((0, 0, 0))
         pygame.draw.rect(screen2, (24, 53, 225), (food_x, food_y, 1, 1))
+
         # Si toca bordes
         if(posx == width):
             game = False
@@ -136,11 +138,7 @@ while play:
             #print('here 3')
             del snake_list[0]
 
-        # Si la snake toca a si misma #TODO arreglar esto
-        for x in snake_list[:-1]:
-            if x == snake_Head:
-                #print('here 2')
-                game = True
+
 
         # Se revisa que el tamaño de la serpiente mas la nueva fruta no sea mayor al tamaño de la pantalla
         if snake_len + 1 >= (width*height):
@@ -150,16 +148,34 @@ while play:
         draw_snake(snake_list)
         #print(posx,posy)
         # Si la snake come alimento
+        saved = " "
+        #print("snakelist before", snake_list, snake_Head)
         if posx == food_x and posy == food_y:
             food_x, food_y = draw_food(posx, posy)
-            snake_len += 1
+
             Your_score(snake_len - 1)
+            #print("poss3",cont1)
+            #saved = snake_list.pop()
+            snake_len += 1
             path = astar(pygame.surfarray.pixels2d(screen2),(posx,posy),(food_x, food_y))
+            #print("surface",pygame.surfarray.pixels2d(screen2))
+            #snake_len += 1
             #print("p",path)
-            pxcont = 0
+            pxcont = 1
+
+        # Si la snake toca a si misma #TODO arreglar esto
+        #print("snakelist", snake_list, snake_Head)
+        for x in snake_list[:-1]:
+            #print("x values", x)
+            #print(cont1)
+            if x == snake_Head:
+                #print('here 2',x, snake_Head)
+                #print("poss2",cont1)
+                game = False
+        cont1 += 1
 
         pygame.display.update()
-        pygame.time.Clock().tick(15)
+        pygame.time.Clock().tick(50)
 
     # Si pierde
     screen.blit(pygame.transform.scale(screen2, screen.get_rect().size), (0, 0))
