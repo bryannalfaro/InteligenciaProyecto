@@ -14,6 +14,8 @@ class Node():
 
 
 def astar(maze, start, end):
+    print("entro")
+    con = 0
     start_node = Node(None, start)
     start_node.g = start_node.h = start_node.f = 0
     end_node = Node(None, end)
@@ -57,9 +59,7 @@ def astar(maze, start, end):
             new_node = Node(current_node, node_position)
 
             children.append(new_node)
-
         for child in children:
-
             for closed_child in closed_list:
                 if child == closed_child:
                     continue
@@ -67,7 +67,8 @@ def astar(maze, start, end):
             child.g = current_node.g + 1
             child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
             child.f = child.g + child.h
-
+            print("here",con)
+            con += 1
             for open_node in open_list:
                 if child == open_node and child.g > open_node.g:
                     continue

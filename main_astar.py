@@ -6,8 +6,8 @@ from sys import exit
 from algorithm_snake import *
 
 pygame.init()
-width = 70
-height = 70
+width = 10
+height = 10
 graph ={}
 graph2 ={}
 cont = 0
@@ -100,6 +100,7 @@ cont = 0
 path = astar(pygame.surfarray.pixels2d(screen2),(posx,posy),(food_x, food_y))
 pxcont = 0
 pycont=1
+aux = 0
 cont1 = 0
 print(path)
 while play:
@@ -157,6 +158,8 @@ while play:
             #print("poss3",cont1)
             #saved = snake_list.pop()
             snake_len += 1
+            print("entro",aux)
+            aux += 1
             path = astar(pygame.surfarray.pixels2d(screen2),(posx,posy),(food_x, food_y))
             #print("surface",pygame.surfarray.pixels2d(screen2))
             #snake_len += 1
@@ -175,7 +178,7 @@ while play:
         cont1 += 1
 
         pygame.display.update()
-        pygame.time.Clock().tick(50)
+        pygame.time.Clock().tick(20)
 
     # Si pierde
     screen.blit(pygame.transform.scale(screen2, screen.get_rect().size), (0, 0))
