@@ -1,4 +1,5 @@
 # Referencia: https://www.edureka.co/blog/snake-game-with-pygame/
+from asyncio import sleep
 import time
 import pygame
 import random
@@ -6,8 +7,8 @@ from sys import exit
 from algorithm_snake import *
 
 pygame.init()
-width = 10
-height = 10
+width = 70
+height = 70
 graph ={}
 graph2 ={}
 cont = 0
@@ -43,9 +44,9 @@ def draw_food(posx, posy):
     food_y = random.randint(0, height-1)
 
     if food_x == posx:
-        food_x += 1
+        food_x = random.randint(0, width-1)
     if food_y == posy:
-        food_y += 1
+        food_y = random.randint(0, height-1)
 
     return food_x, food_y
 
@@ -113,13 +114,10 @@ while play:
         screen.blit(pygame.transform.scale(screen2, screen.get_rect().size), (0, 0))
         Your_score(snake_len - 1)
 
-        posx = path[pxcont][0]
-        posy  = path[pxcont][1]
-        #print("poss",cont1)
-        pxcont += 1
+
         cont += 1
         screen2.fill((0, 0, 0))
-        pygame.draw.rect(screen2, (24, 53, 225), (food_x, food_y, 1, 1))
+        # Se dibuja en cada ciclo
 
         # Si toca bordes
         if(posx == width):
@@ -130,7 +128,7 @@ while play:
             game = False
         if(posy == -1):
             game = False
-
+        pygame.draw.rect(screen2, (24, 53, 225), (food_x, food_y, 1, 1))
 
         snake_Head = [posx, posy]
         snake_list.append(snake_Head)
@@ -139,46 +137,57 @@ while play:
             #print('here 3')
             del snake_list[0]
 
-
-
         # Se revisa que el tamaño de la serpiente mas la nueva fruta no sea mayor al tamaño de la pantalla
         if snake_len + 1 >= (width*height):
-            #print('here 1')
             game = False
-        # Se dibuja en cada ciclo
-        draw_snake(snake_list)
-        #print(posx,posy)
+
         # Si la snake come alimento
         saved = " "
-        #print("snakelist before", snake_list, snake_Head)
+        bef = food_x
+        bef2 = food_y
+        draw_snake(snake_list)
         if posx == food_x and posy == food_y:
+
             food_x, food_y = draw_food(posx, posy)
 
             Your_score(snake_len - 1)
-            #print("poss3",cont1)
-            #saved = snake_list.pop()
             snake_len += 1
-            print("entro",aux)
+
             aux += 1
-            path = astar(pygame.surfarray.pixels2d(screen2),(posx,posy),(food_x, food_y))
-            #print("surface",pygame.surfarray.pixels2d(screen2))
-            #snake_len += 1
-            #print("p",path)
+            path = astar(pygame.surfarray.pixels2d(screen2),(bef,bef2),(food_x, food_y))
+            finish = 0
+            flag = False
+            if(path == None):
+                flag=True
+                while(flag):
+                    if(path == None):
+                        if(finish<30):
+                            food_x, food_y = draw_food(posx, posy)
+                            path = astar(pygame.surfarray.pixels2d(screen2),(bef,bef2),(food_x, food_y))
+                            finish += 1
+                        else:
+                            flag=False
+                            game = False
+                    else:
+                        flag = False
             pxcont = 1
 
-        # Si la snake toca a si misma #TODO arreglar esto
-        #print("snakelist", snake_list, snake_Head)
+        if(path!=None):
+            posx = path[pxcont][0]
+            posy  = path[pxcont][1]
+            pxcont += 1
+        else:
+            game = False
+        # Si la snake toca a si misma
+
         for x in snake_list[:-1]:
-            #print("x values", x)
-            #print(cont1)
             if x == snake_Head:
-                #print('here 2',x, snake_Head)
-                #print("poss2",cont1)
+                print('here 2')
                 game = False
         cont1 += 1
 
         pygame.display.update()
-        pygame.time.Clock().tick(20)
+        pygame.time.Clock().tick(100)
 
     # Si pierde
     screen.blit(pygame.transform.scale(screen2, screen.get_rect().size), (0, 0))
@@ -201,8 +210,13 @@ while play:
                 posy = random.randint(0, height-1)
                 snake_len = 1
                 snake_list = []
+                food_x, food_y = draw_food(posx, posy)
+                path = astar(pygame.surfarray.pixels2d(screen2),(posx,posy),(food_x, food_y))
                 game = True
-                pygame.mixer.pause()
-                pygame.mixer.Sound.play(sonido_fondo, -1)
+
+                #pygame.mixer.pause()
+                #pygame.mixer.Sound.play(sonido_fondo, -1)
 
 pygame.quit()
+
+
