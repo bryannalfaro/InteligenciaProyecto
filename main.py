@@ -11,8 +11,8 @@ import random
 from sys import exit
 
 pygame.init()
-width = 40
-height = 40
+width = 30
+height = 30
 posx = random.randint(0, width-1)
 posy = random.randint(0, height-1)
 
