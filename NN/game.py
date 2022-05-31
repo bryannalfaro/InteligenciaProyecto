@@ -1,3 +1,4 @@
+# CODIGO UTILIZADO EXTRAIDO DE: https://github.com/python-engineer/snake-ai-pytorch
 import pygame
 import random
 from enum import Enum
@@ -6,14 +7,6 @@ import numpy as np
 
 pygame.init()
 font = pygame.font.SysFont('Comic Sans MS', 25)
-
-# reset
-# reward
-# play(action) => direction
-# game iteration
-# is_collision
-
-
 class Direction(Enum):
     RIGHT = 1
     LEFT = 2

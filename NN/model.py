@@ -1,3 +1,4 @@
+# CODIGO UTILIZADO EXTRAIDO DE: https://github.com/python-engineer/snake-ai-pytorch
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
@@ -28,10 +29,8 @@ class QTrainer:
             reward = torch.unsqueeze(reward, 0)
             game_over = (game_over, )
 
-        # predictied Q values
         predicted_q_values = self.model(state)
 
-        # Q new = r + y * max(next predicted Q value)
         target = predicted_q_values.clone()
         for index in range(len(game_over)):
             Q_new = reward[index]
@@ -41,7 +40,6 @@ class QTrainer:
 
             target[index][torch.argmax(move[index]).item()] = Q_new
 
-        # Q_new = r + y * max(next_predicted Q value) -> only do this if not game_over
         self.optimizer.zero_grad()
         loss = self.criterion(target, predicted_q_values)
         loss.backward()
@@ -64,9 +62,5 @@ class Linear_Qnet(nn.Module):
         location = './NN/model'
         if not os.path.exists(location):
             os.makedirs(location)
-
-        # location lo load the model
         file_name = os.path.join(location, file_name)
-
-        # save with torch
         torch.save(self.state_dict(), file_name)

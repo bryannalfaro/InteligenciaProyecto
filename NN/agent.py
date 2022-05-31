@@ -1,11 +1,13 @@
-from pickle import NONE
-import random
-import torch
-import numpy as np
+# CODIGO UTILIZADO EXTRAIDO DE: https://github.com/python-engineer/snake-ai-pytorch
+from collections import deque
 from game import SGNN, Direction, Point
 from model import Linear_Qnet, QTrainer
+import numpy as np
 from ploter import plot
-from collections import deque
+import random
+import torch
+
+# CONSTANTES UTILIZADAS EN EL JUEGO
 
 MAX_MEMORY = 100000
 BATCH_SIZE = 1000
@@ -13,60 +15,48 @@ LR = 0.001  # ! probar con otro lr original 0.001
 GAMMA = 0.9  # ! probar con valores entre 0.8 y 0.9
 HIDDE_NET_SIZE = 256  # ! probar con otro numero del centro
 
+# Se define la funcion para entrenar al agente
 
 def train():
-    plot_scores = []
-    plot_mean_scores = []
+    scores_to_plot = []
+    plot_mean = []
     total_score = 0
-    record = 0
+    max_score = 0
     agent = Agent()
     game = SGNN()
     while True:
-        # old state
         old_state = agent.get_state(game)
-
-        # move
         finale_move = agent.get_action(old_state)
-
-        # move and get new state
         reward, game_over, score = game.play_step(finale_move)
         new_state = agent.get_state(game)
-
-        # train short memory
         agent.train_short_memory(
             old_state, finale_move, reward, new_state, game_over)
-
-        # remember
         agent.remember(old_state, finale_move, reward, new_state, game_over)
 
         if game_over:
-            # train long memory and plot results
             game.reset()
-            agent.number_of_games += 1
+            agent.total_games += 1
             agent.train_long_memory()
 
-            if score > record:
-                record = score
+            if score > max_score:
+                max_score = score
                 agent.model.save()
 
-            print('Game: ', agent.number_of_games,
-                  ' Score: ', score, ' Best: ', record)
+            print('Game: ', agent.total_games,
+                  ' Score: ', score, ' Best: ', max_score)
 
-            plot_scores.append(score)
+            scores_to_plot.append(score)
             total_score += score
-            plot_mean_scores.append(total_score / agent.number_of_games)
-            plot(plot_scores, plot_mean_scores)
+            plot_mean.append(total_score / agent.total_games)
+            plot(scores_to_plot, plot_mean)
 
 
 class Agent:
     def __init__(self):
-        self.number_of_games = 0
-        self.epsilon = 0  # to control de randomness
-        # the discount rate smaller than 1 (around 0.8 or 0.9)
+        self.total_games = 0
+        self.epsilon = 0
         self.gamma = GAMMA
-        self.memory = deque(maxlen=MAX_MEMORY)  # the memory
-        # model and trainer
-        # 11 because we have 11 states and 3 because we have 3 actions, the hidden can be change
+        self.memory = deque(maxlen=MAX_MEMORY)
         self.model = Linear_Qnet(11, HIDDE_NET_SIZE, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=GAMMA)
 
@@ -77,41 +67,36 @@ class Agent:
         upper_point = Point(head.x, head.y - 20)
         down_point = Point(head.x, head.y + 20)
 
-        dir_l = game.direction == Direction.LEFT
-        dir_r = game.direction == Direction.RIGHT
-        dir_u = game.direction == Direction.UP
-        dir_d = game.direction == Direction.DOWN
+        direction_left = game.direction == Direction.LEFT
+        direction_right = game.direction == Direction.RIGHT
+        direction_up = game.direction == Direction.UP
+        direction_down = game.direction == Direction.DOWN
 
         state = [
-            # Check if there is a "collision" straight ahead (danger)
-            (dir_r and game.is_collision(right_point)) or
-            (dir_l and game.is_collision(left_point)) or
-            (dir_u and game.is_collision(upper_point)) or
-            (dir_d and game.is_collision(down_point)),
+            (direction_right and game.is_collision(right_point)) or
+            (direction_left and game.is_collision(left_point)) or
+            (direction_up and game.is_collision(upper_point)) or
+            (direction_down and game.is_collision(down_point)),
 
-            # Check if there is a "collision" on the right direction ahead (danger)
-            (dir_u and game.is_collision(right_point)) or
-            (dir_d and game.is_collision(left_point)) or
-            (dir_l and game.is_collision(upper_point)) or
-            (dir_r and game.is_collision(down_point)),
+            (direction_up and game.is_collision(right_point)) or
+            (direction_down and game.is_collision(left_point)) or
+            (direction_left and game.is_collision(upper_point)) or
+            (direction_right and game.is_collision(down_point)),
 
-            # Check if there is a "collision" left direction ahead (danger)
-            (dir_d and game.is_collision(right_point)) or
-            (dir_u and game.is_collision(left_point)) or
-            (dir_r and game.is_collision(upper_point)) or
-            (dir_l and game.is_collision(down_point)),
+            (direction_down and game.is_collision(right_point)) or
+            (direction_up and game.is_collision(left_point)) or
+            (direction_right and game.is_collision(upper_point)) or
+            (direction_left and game.is_collision(down_point)),
 
-            # direction to move
-            dir_l,
-            dir_r,
-            dir_u,
-            dir_d,
+            direction_left,
+            direction_right,
+            direction_up,
+            direction_down,
 
-            # gold location
-            game.food.x < game.head.x,  # gold left
-            game.food.x > game.head.x,  # gold right
-            game.food.y < game.head.y,  # gold up
-            game.food.y > game.head.y  # gold down
+            game.food.x < game.head.x,
+            game.food.x > game.head.x,
+            game.food.y < game.head.y,
+            game.food.y > game.head.y
         ]
 
         return np.array(state, dtype=int)
@@ -133,8 +118,7 @@ class Agent:
         self.trainer.train_step(state, action, reward, next_state, game_over)
 
     def get_action(self, state):
-        # for start ramdom moves (exploration / exploitation)
-        self.epsilon = 80 - self.number_of_games  # cahnge 80
+        self.epsilon = 80 - self.total_games
         final_move = [0, 0, 0]
 
         if random.randint(0, 200) < self.epsilon:
